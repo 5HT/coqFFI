@@ -1,13 +1,13 @@
-open Constr
+(**open Constr**)
 (** This module stores the references to Coq's namespace. *)
 
 let message = "CoqFFI"
-let lookup  = Coqlib.gen_constant_in_modules message
-let lookup_ref = Coqlib.gen_reference_in_modules message
+let lookup path value = Universes.constr_of_global (Coqlib.gen_reference_in_modules message path value)
+let lookup_ref path value = Universes.constr_of_global (Coqlib.gen_reference_in_modules message path value)
 
 let global_ref_of_ref r =
   let path = Nametab.path_of_global r in
-  Libnames.Qualid(Loc.ghost, Libnames.qualid_of_path path)
+  Libnames.Qualid(None, Libnames.qualid_of_path path)
 
 module SExpr = struct
   let constant = lookup [["CoqFFI"; "reifiable"; "SExpr"]]
@@ -106,11 +106,11 @@ let rec mk_sexpr : sexpr -> Term.constr = function
 exception NotAnSExpr
 
 let check_positive ind =
-  if not (Constr.equal (mkInd ind) (Lazy.force Positive.t)) then
+  if not (Constr.equal (Constr.mkInd ind) (Lazy.force Positive.t)) then
     raise NotAnSExpr
 
 let check_sexpr_ind ind =
-  if not (Constr.equal (mkInd ind) (Lazy.force SExpr.t)) then
+  if not (Constr.equal (Constr.mkInd ind) (Lazy.force SExpr.t)) then
     raise NotAnSExpr
 
 let rec int_of_positive t =

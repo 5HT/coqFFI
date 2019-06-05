@@ -22,7 +22,7 @@ open CoqFFIState
 let one = lazy (Constr.mkApp(Lazy.force SExpr.i,[|Lazy.force Positive.xH|]))
 
 let find_instance env evd tclass ty =
-  let tc = Constr.mkApp(tclass, [|ty|]) in
+  let tc = EConstr.mkApp(tclass, [|ty|]) in
   let (evd,evar) = Evarutil.new_evar env evd tc in
   let evd = Typeclasses.resolve_typeclasses env evd in
   Evarutil.nf_evar evd (Evd.existential_value evd (destEvar evar))
